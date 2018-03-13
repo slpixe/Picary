@@ -1,0 +1,38 @@
+{
+  "name": "picary",
+  "version": "1.0.0",
+  "description": "Picture Dictionary",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack",
+    "start": "http-server dist",
+    "watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slpixe/Picary.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/slpixe/Picary/issues"
+  },
+  "homepage": "https://github.com/slpixe/Picary#readme",
+  "dependencies": {
+    "@babel/core": "^7.0.0-beta.40",
+    "@babel/preset-env": "^7.0.0-beta.40",
+    "babel-loader": "^8.0.0-beta.0",
+    "clean-webpack-plugin": "^0.1.19",
+    "copy-webpack-plugin": "^4.5.1",
+    "html-webpack-plugin": "^3.0.6",
+    "localforage": "^1.6.0",
+    "lodash": "^4.17.5",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.11",
+    "webpack-manifest-plugin": "^2.0.0-rc.2",
+    "workbox-sw": "^2.1.3",
+    "workbox-webpack-plugin": "^2.1.3"
+  },
+  "devDependencies": {}
+}
