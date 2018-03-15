@@ -1,50 +1,87 @@
-const TOP_STORIES_URL = 'https://hacker-news.firebaseio.com/v0/topstories.json';
+import PouchDB from 'pouchdb';
+import PouchDBFind from 'pouchdb-find';
 
-function init() {
-  let manifest = document.createElement('link');
-  manifest.rel = 'manifest';
-  manifest.href = '/manifest.json';
-  document.head.appendChild(manifest);
-  let title = document.createElement('h1');
-  title.textContent = 'Top 10 Hacker News Stories';
-  document.body.appendChild(title);
-  let list = document.createElement('ol');
-  document.body.appendChild(list);
-  fetchTop10().then(stories => renderTop10(stories));
+PouchDB.plugin(PouchDBFind);
 
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
-        console.log('SW registered: ', registration);
-        // registration.pushManager.subscribe({userVisibleOnly: true});
-      }).catch(registrationError => {
-        console.log('SW registration failed: ', registrationError);
+let db;
+
+class Index {
+
+  constructor() {
+    db = new PouchDB('items');
+    db.createIndex({
+      index: {
+        fields: ['category']
+      }
+    }).then(function (result) {
+      console.log(result);
+    }).catch(function (err) {
+      console.log(err);
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+          console.log('SW registered: ');
+        }).catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
       });
+    }
+
+    this.seed();
+    this.fetchCategories()
+  }
+
+  seed() {
+    db.bulkDocs([
+      {_id: 'black', name: 'Black', category: 'Color'},
+      {_id: 'white', name: 'White', category: 'Color'},
+      {_id: 'blue', name: 'Blue', category: 'Color'},
+      {_id: 'orange', name: 'Orange', category: 'Shark'}
+    ]).then(function (result) {
+      // console.log(result);
+    }).catch(function (err) {
+      console.log(err);
     });
   }
+
+  fetchCategories() {
+    db.find({
+      selector: {category: {'$gt': null}},
+      fields: ['category']
+    }).then(result => {
+      // really hacky method to extract values from results
+      let allCategories = result.docs.map(a => a.category);
+
+      let uniqueCategories = this.uniquifyCategories(allCategories);
+      console.log(uniqueCategories);
+
+      uniqueCategories.map(cat => {
+        const catItem = this.categoryItem(cat);
+        document.querySelector('#list-categories').innerHTML += catItem;
+      })
+
+    }).catch(err => {
+      console.log(err);
+    });
+  }
+
+  uniquifyCategories(categories) {
+    return categories.filter((v, i, a) => a.indexOf(v) === i)
+  }
+
+  /* === Templates === */
+
+  categoryItem(category) {
+    return (`<li class="item-category" data-category="${category}"><strong>${category}</strong></li>`);
+  };
+
+  /* === #Templates === */
+
+// document.querySelector('#getCategories').addEventListener('click', function() {
+//   find();
+// });
 }
 
-function fetchTop10() {
-  return fetch(TOP_STORIES_URL).then(response => {
-    return response.json();
-  }).then(ids => {
-    let top10Ids = ids.slice(0, 10);
-    let urls = top10Ids.map(
-      id => `https://hacker-news.firebaseio.com/v0/item/${id}.json`
-    );
-    let requests = urls.map(url => fetch(url).then(response => response.json()));
-    return Promise.all(requests);
-  });
-}
-
-function renderTop10(stories) {
-  let list = document.querySelector('ol');
-  list.innerHTML = '';
-  stories.forEach(story => {
-    let item = document.createElement('li');
-    item.textContent = story.title;
-    list.appendChild(item);
-  });
-}
-
-init();
+const index = new Index()
