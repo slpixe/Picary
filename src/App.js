@@ -7,26 +7,31 @@ import Button from 'material-ui/Button';
 import Card from 'material-ui/Card';
 
 class App extends Component {
-  constructor() {
+  constructor () {
     super();
     firebase.firestore().enablePersistence()
       .then(() => {
         let db = firebase.firestore();
       })
     this.itemsRef = firebase.firestore().collection('items');
+    this.categoriesRef = firebase.firestore().collection('categories');
     this.state = {
       fetching: false,
-      items: []
+      items: [],
+      categories: [],
+      selectedCategory: null
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.unsubscribeCol = this.itemsRef.onSnapshot(this.onColUpdate);
+    this.unsubscribeCol2 = this.categoriesRef.onSnapshot(this.onCategoriesUpdate);
     this.setState({fetching: true});
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.unsubscribeCol();
+    this.unsubscribeCol2();
   }
 
   onColUpdate = (snapshot) => {
@@ -38,13 +43,70 @@ class App extends Component {
       items: docs,
       fetching: false
     });
-    console.log(docs);
+    console.log('docs', docs);
   };
 
-  render() {
+  onCategoriesUpdate = (snapshot) => {
+    const docs = snapshot.docs.map((docSnapshot) => ({
+      id: docSnapshot.id,
+      data: docSnapshot.data()
+    }));
+    this.setState({
+      categories: docs,
+      fetching: false
+    });
+    console.log('docs', docs);
+  }
+
+  onSelectCategory = (selectedCategoryItem) => {
+    console.log(selectedCategoryItem.data.name)
+    this.setState({selectedCategory: selectedCategoryItem.data.name})
+  }
+
+  renderCategories = () => {
+    return <div>
+      {this.state.categories.map((item) => {
+        return (
+          <Card key={item.id}>
+            <div onClick={() => this.onSelectCategory(item)}>
+              <div>{`${item.data.label}`}</div>
+              {this.renderSvg(item.data.image)}
+            </div>
+          </Card>
+        )
+      })}
+    </div>
+  }
+
+  filterItems = (items, property, value) => {
+    return items.filter(item => item.data[property] === value)
+  }
+
+  renderitems = () => {
+    if (!this.state.selectedCategory) return
+
+    let filteredItems = this.filterItems(this.state.items, 'category', 'Colors')
+
+    return (
+      <div>
+        {filteredItems.map((item) => <Card
+          key={item.id}><Button>{`${item.data.category} - ${item.data.name}`}</Button></Card>)}
+      </div>
+    )
+  }
+
+  renderSvg = (svg) => {
+    const computedSrc = `data:image/svg+xml;base64,${svg}`
+    return (
+      <img src={computedSrc} />
+    )
+  }
+
+  render () {
     return (
       <div className="App">
-        {this.state.items.map((item, i) => <Card key={item.id}><Button>{`${item.data.category} - ${item.data.name}`}</Button></Card>)}
+        {this.renderCategories()}
+        {this.renderitems()}
       </div>
     );
   }
