@@ -3,8 +3,8 @@ import './App.css';
 import firebase from './firebase';
 import 'firebase/firestore';
 
-import Button from 'material-ui/Button';
-import Card from 'material-ui/Card';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
 
 class App extends Component {
   constructor () {
@@ -64,6 +64,8 @@ class App extends Component {
   }
 
   renderCategories = () => {
+    if(this.state.selectedCategory) return
+
     return <div>
       {this.state.categories.map((item) => {
         return (
@@ -82,15 +84,20 @@ class App extends Component {
     return items.filter(item => item.data[property] === value)
   }
 
-  renderitems = () => {
+  renderItems = () => {
     if (!this.state.selectedCategory) return
 
-    let filteredItems = this.filterItems(this.state.items, 'category', 'Colors')
+    let filteredItems = this.filterItems(this.state.items, 'category', this.state.selectedCategory)
 
     return (
       <div>
-        {filteredItems.map((item) => <Card
-          key={item.id}><Button>{`${item.data.category} - ${item.data.name}`}</Button></Card>)}
+        <Button onClick={() => { this.setState({selectedCategory: null}) }}>
+          <img src={'/back.svg'} style={{width: '100px'}} />
+        </Button>
+        {filteredItems.map(item => {
+            return <Card key={item.id}><Button>{`${item.data.category} - ${item.data.name}`}</Button></Card>
+          })
+        }
       </div>
     )
   }
@@ -106,7 +113,7 @@ class App extends Component {
     return (
       <div className="App">
         {this.renderCategories()}
-        {this.renderitems()}
+        {this.renderItems()}
       </div>
     );
   }

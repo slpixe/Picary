@@ -1,0 +1,19 @@
+<?xml version="1.0"?><svg width="36.514278" height="27.776539" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <title>Back button</title>
+ <metadata id="metadata3">Arrow icon seticons for toolbar buttonsiconarrownavigationgreenredbuttonOpen Clip Art LibraryJakub JankiewiczJakub Jankiewiczimage/svg+xmlpl</metadata>
+ <defs>
+  <linearGradient id="linearGradient7090">
+   <stop stop-color="#ff2a26" id="stop7092" offset="0"/>
+   <stop stop-color="#96000d" id="stop7094" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.868663" x2="0.104368" y1="0.080583" x1="0.920896" id="linearGradient7089" xlink:href="#linearGradient7090"/>
+ </defs>
+ <metadata id="metadata4">image/svg+xml</metadata>
+ <g>
+  <title>Layer 1</title>
+  <g id="layer1">
+   <path fill="url(#linearGradient7089)" fill-rule="nonzero" stroke="#6b1a11" stroke-width="1.75" stroke-linejoin="round" marker-start="none" marker-mid="none" marker-end="none" stroke-miterlimit="4" stroke-dashoffset="0" id="path10087" d="m14.74292,26.901489l0,-5.348335l20.895874,0l0,-15.298775l-20.895874,0l0,-5.379425l-13.868408,13.028816l13.868408,12.997719z"/>
+   <text font-weight="bold" xml:space="preserve" text-anchor="middle" font-family="Arial" font-size="10" id="svg_1" y="17.103893" x="21.298222" stroke-width="0" stroke="#000000" fill="#ffffff">Back</text>
+  </g>
+ </g>
+</svg>
