@@ -17,9 +17,9 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 let dbItems = firebase.firestore().collection('items');
-let parentNullItems = [];
+// let parentNullItems = [];
 console.log('a');
-console.log('l', parentNullItems.length);
+// console.log('l', parentNullItems.length);
 
 // const c = (snapshot) => {
 //   const docs = snapshot.docs.map((docSnapshot) => ({
@@ -33,12 +33,12 @@ console.log('l', parentNullItems.length);
 //   console.log('docs', docs);
 // };
 
-const getWhereParentNull = () => {
+const getWhereParentNull = async () => {
   console.log('getWhereParentNull');
-  dbItems.where("parent", '==', '')
+  return dbItems.where("parent", '==', '')
   .get()
   .then(querySnapshot => {
-    parentNullItems = [];
+    let parentNullItems = [];
     querySnapshot.forEach(doc =>{
       // doc.data() is never undefined for query doc snapshots
       // console.log(doc.id, " => ", doc.data());
@@ -46,6 +46,7 @@ const getWhereParentNull = () => {
     })
     console.log('parentNullItems', parentNullItems);
     console.log('ll', parentNullItems.length);
+    return parentNullItems;
   })
   .catch(function(error) {
     console.log("Error getting documents: ", error);
@@ -54,8 +55,16 @@ const getWhereParentNull = () => {
 
 function App() {
   const [count, setCount] = useState(0);
+  const [parentNullItems, setParentNullItems] = useState([]);
   console.log('app running');
-  getWhereParentNull();
+
+  useEffect(() => {
+    const data = getWhereParentNull();
+    data.then(ddd => {
+      console.log('ddd', ddd);
+      setParentNullItems(ddd);
+    });
+  }, []);
   
   return (
     <div className="App">
@@ -63,7 +72,7 @@ function App() {
       <button onClick={() => setCount(count + 1)}>
         Click me
       </button>
-      {parentNullItems.length > 0 ? <h2>yay</h2> : <h2>nope</h2>}
+      {parentNullItems?.length > 0 ? <h2>yay</h2> : <h2>nope</h2>}
       <header className="App-header">
         <p>
           Edit <code>src/App.js</code> and save to reload.
