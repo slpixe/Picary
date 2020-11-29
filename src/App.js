@@ -18,7 +18,7 @@ firebase.initializeApp(firebaseConfig);
 
 let dbItems = firebase.firestore().collection('items');
 // let parentNullItems = [];
-console.log('a');
+console.log('Init running');
 // console.log('l', parentNullItems.length);
 
 // const c = (snapshot) => {
@@ -33,19 +33,18 @@ console.log('a');
 //   console.log('docs', docs);
 // };
 
-const getWhereParentNull = async () => {
+const getWhereParentNull = () => {
   console.log('getWhereParentNull');
   return dbItems.where("parent", '==', '')
   .get()
   .then(querySnapshot => {
-    let parentNullItems = [];
+    const parentNullItems = [];
     querySnapshot.forEach(doc =>{
       // doc.data() is never undefined for query doc snapshots
       // console.log(doc.id, " => ", doc.data());
       parentNullItems.push(doc.data());
     })
-    console.log('parentNullItems', parentNullItems);
-    console.log('ll', parentNullItems.length);
+    // console.log('parentNullItems', parentNullItems);
     return parentNullItems;
   })
   .catch(function(error) {
@@ -53,12 +52,53 @@ const getWhereParentNull = async () => {
   });
 };
 
+const getWhereParentIs = (searchTerm = '') => {
+  console.log('getWhereParentIs');
+  return dbItems.where("parent", '==', searchTerm.toLowerCase())
+  .get()
+  .then(querySnapshot => {
+    const items = [];
+    querySnapshot.forEach(doc =>{
+      // doc.data() is never undefined for query doc snapshots
+      // console.log(doc.id, " => ", doc.data());
+      items.push(doc.data());
+    })
+    // console.log('parentNullItems', parentNullItems);
+    return items;
+  })
+  .catch(function(error) {
+    console.log("Error getting documents: ", error);
+  });
+};
+
+const renderItems = (items) => {
+  if(!items?.length) {
+    return <h2>Nope</h2>
+  }
+
+  console.log('renderItems itens', items);
+
+  return (
+    <ul>
+      {items.map(item => <li key={item.name} onClick={() => {
+        console.log('clicked', item.name);
+        const a = getWhereParentIs(item.name);
+        a.then(data => console.log('call getWhereParentIs:', a));
+        }}>{item.name}</li>)}
+    </ul>
+  )
+
+  // return (
+  //   <h2>hmm</h2>
+  // )
+}
+
 function App() {
-  const [count, setCount] = useState(0);
   const [parentNullItems, setParentNullItems] = useState([]);
   console.log('app running');
 
   useEffect(() => {
+    console.log('useEffect');
     const data = getWhereParentNull();
     data.then(ddd => {
       console.log('ddd', ddd);
@@ -68,24 +108,8 @@ function App() {
   
   return (
     <div className="App">
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-      {parentNullItems?.length > 0 ? <h2>yay</h2> : <h2>nope</h2>}
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {renderItems(parentNullItems)}
+      {/* {parentNullItems?.length > 0 ? <h2>yay</h2> : <h2>nope</h2>} */}
     </div>
   );
 }
